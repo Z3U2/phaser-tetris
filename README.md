@@ -1,5 +1,6 @@
 ## Simple Tetris Game using Phaser
 
+## WIP !
 ### What you need :
 
 - A computer
