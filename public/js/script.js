@@ -7,13 +7,14 @@ function preload() {
 
 }
 
-
+var mainCube;
 var cursors;
 var wall;
 var block;
 var leftTime = 0;
 var rightTime = 0;
 var downTime = 0;
+var rotationTime =0;
 var map = [];
 initializeMap();
 console.log(map);
@@ -33,11 +34,7 @@ function create() {
   wall.body.immovable = true;
 
   // Shape we're controlling
-  shape = game.add.group();
-
-  // Creating cube sprite, and x position
-  shape.create(360,0,'cube');
-  shape.create(440,0,'cube');
+  shape = createshape();
 
   // Enabling physics for cube
   game.physics.enable(shape,Phaser.Physics.ARCADE);
@@ -50,6 +47,7 @@ function create() {
 
   // Our controls
   cursors = game.input.keyboard.createCursorKeys();
+  game.input.keyboard.addKeyCapture([ Phaser.Keyboard.SPACEBAR ]);
 
   // cursors.left.onDown(goLeft);
   // cursors.right.onDown(goRight);
@@ -76,6 +74,9 @@ function update() {
     }
     else if (cursors.down.isDown) {
       goDown();
+    }
+    else if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
+      rotate();
     }
     else {
         // Stop
@@ -110,11 +111,7 @@ function shapeCollide() {
 
 function newShape() {
   // Shape we're controlling
-  shape = game.add.group();
-
-  // Creating cube sprite, and x position
-  shape.create(360,0,'cube');
-  shape.create(360,80,'cube');
+  shape = createshape();
 
   // Enabling physics for cube
   game.physics.arcade.enable(shape);
@@ -214,7 +211,6 @@ function updateMap() {
   block.forEach(function(blockShape){
     blockShape.forEach(function(blockCube){
       if (cleanup.indexOf(blockCube.yIndex)>-1 ) {
-        console.log("here");
         blockCube.kill();
       }
     })
@@ -249,4 +245,110 @@ function isthere(x,y) {
 
   })
   return isThere;
+}
+
+function createshape() {
+  console.log("running createshape");
+  var shapeIndex = Math.floor(7*Math.random());
+  console.log(shapeIndex);
+  return createShapeIndex(shapeIndex);
+}
+
+function createShapeIndex(shapeIndex) {
+  console.log("running create");
+  var result = game.add.group();
+
+  switch (shapeIndex) {
+    case 0:
+      // I shape
+      mainCube = result.create(360,0,'cube');
+      result.create(360,-80,'cube');
+      result.create(360,-160,'cube');
+      result.create(360,80,'cube');
+
+      return result
+
+      break;
+    case 1:
+      // L shape
+      mainCube = result.create(360,0,'cube');
+      result.create(440,0,'cube');
+      result.create(360,-80,'cube');
+      result.create(360,-160,'cube');
+
+      return result;
+
+      break;
+
+    case 2:
+      // J shape
+      mainCube = result.create(360,0,'cube');
+      result.create(280,0,'cube');
+      result.create(360,-80,'cube');
+      result.create(360,-160,'cube');
+
+      return result;
+
+      break;
+
+    case 3:
+      // Z shape
+      mainCube = result.create(360,0,'cube');
+      result.create(440,0,'cube');
+      result.create(360,-80,'cube');
+      result.create(280,-80,'cube');
+
+      return result
+
+      break;
+
+    case 4:
+      // S shape
+      mainCube = result.create(360,0,'cube');
+      result.create(280,0,'cube');
+      result.create(360,-80,'cube');
+      result.create(440,-80,'cube');
+
+      return result
+
+      break;
+
+    case 5:
+      // O shape
+      mainCube = result.create(360,0,'cube');
+      result.create(360,80,'cube');
+      result.create(440,0,'cube');
+      result.create(440,80,'cube');
+
+      return result
+
+      break;
+
+    case 6:
+      // T shape
+      mainCube = result.create(360,0,'cube');
+      result.create(360,-80,'cube');
+      result.create(440,0,'cube');
+      result.create(280,0,'cube');
+
+      return result;
+
+      break;
+    default:
+      console.log("default");
+  }
+}
+function rotate() {
+  if(game.time.now>rotationTime) {
+    shape.forEach(function(cube){
+      if (cube!=mainCube) {
+        var xdist = cube.position.x-mainCube.position.x
+        var ydist = cube.position.y-mainCube.position.y
+
+        cube.position.x = mainCube.position.x-ydist
+        cube.position.y = mainCube.position.y+xdist
+      }
+    })
+    rotationTime = game.time.now + 150
+  }
 }
